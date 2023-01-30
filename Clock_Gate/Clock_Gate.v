@@ -16,6 +16,7 @@ end
 
 assign gate_clk = latch_en && CLK;
 
+// For Physical Design purpose ( From Standard Cell Library)
 /*
 TLATNCAX12M U0_TLATNCAX12M (
 	.E(Enable),
