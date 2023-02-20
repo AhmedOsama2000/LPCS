@@ -20,28 +20,21 @@ assign shift  = i_div_ratio >> 1;
 always @(posedge i_ref_clk , negedge i_rst_n) begin
 
 	if (!i_rst_n) begin
-
 		output_div   <= 0;
 		counter_flag <= 0;
-
 	end
-	else if (!counter) begin
-		
+	else if (!counter) begin	
 		output_div <= ~output_div;
-
 	end
 	// even counter
-	else if (counter == shift && !odd) begin
-		
+	else if (counter == shift && !odd) begin	
 		output_div <= ~output_div;
-
 	end
 	// odd counter
 	else if ( (counter == shift && odd && !counter_flag) || (counter == (shift + 1) && odd && counter_flag) ) begin
 		
 		output_div   <= ~output_div;
 		counter_flag <= ~counter_flag;
-
 	end
 
 end
@@ -50,43 +43,28 @@ end
 always @(posedge i_ref_clk , negedge i_rst_n) begin
 
 	if(!i_rst_n) begin
-
 		counter <= 0;
-
 	end
-	else if (counter == shift && !odd) begin
-			
+	else if (counter == shift && !odd) begin		
 		counter <= 1;
-
 	end
-	else if ((counter == shift && odd && !counter_flag) || (counter == (shift + 1) && odd && counter_flag)) begin
-		
+	else if ((counter == shift && odd && !counter_flag) || (counter == (shift + 1) && odd && counter_flag)) begin	
 		counter <= 1;
-
 	end
 	else if (i_clk_en) begin
-
 		counter <= counter + 1;
-
 	end
-
 end
 
 // enable signal
 always @(*) begin
 	
 	if (!i_clk_en || i_div_ratio == 1 || i_div_ratio == 0) begin
-
 		o_div_clk = i_ref_clk;
-
 	end
 	else begin
-		
 		o_div_clk = output_div;
-
 	end
-
 end
-
 
 endmodule // ClkDiv
