@@ -8,15 +8,16 @@ module SYS_CTRL
 (
 	input  wire						 CLK,
 	input  wire 					 rst_n,
+	input  wire                      Wr_Ack,
+	input  wire                      Full,
 	input  wire [RD_DATA_WIDTH-1:0]  Rd_data,
 	input  wire 					 Rd_data_valid,
 	input  wire [ALU_OUT_WIDTH-1:0]  ALU_OUT,
 	input  wire 				     ALU_OUT_valid,
-	input  wire 					 BUSY,
 	input  wire [RX_FRAME_WIDTH-1:0] RX_P_DATA,
 	input  wire 					 RX_D_VLD,
-	output wire [RD_DATA_WIDTH-1:0]  TX_P_DATA,
-	output wire 					 TX_D_VLD,
+	output wire [RD_DATA_WIDTH-1:0]  FIFO_IN,
+	output wire 					 Wr_Req,
 	output wire                      WrEn,
 	output wire [RX_FRAME_WIDTH-1:0] WrData,
 	output wire [ADDRESS_SIZE-1:0]   Address,
@@ -32,12 +33,13 @@ SYS_CTRL_TX CTRL_TX
 	.CLK(CLK),
 	.rst_n(rst_n),
 	.Rd_data(Rd_data),
+	.Full(Full),
+	.Wr_Ack(Wr_Ack),
 	.Rd_data_valid(Rd_data_valid),
 	.ALU_OUT(ALU_OUT),
 	.ALU_OUT_valid(ALU_OUT_valid),
-	.BUSY(BUSY),
-	.TX_P_DATA(TX_P_DATA),
-	.TX_D_VLD(TX_D_VLD)
+	.FIFO_IN(FIFO_IN),
+	.Wr_Req(Wr_Req)
 );
 
 SYS_CTRL_RX CTRL_RX
