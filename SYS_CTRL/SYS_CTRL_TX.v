@@ -6,7 +6,6 @@ module SYS_CTRL_TX
 (
 	input  wire						CLK,
 	input  wire 					rst_n,
-	input  wire                     Wr_Ack,
 	input  wire                     Full,
 	input  wire [RD_DATA_WIDTH-1:0] Rd_data,
 	input  wire 					Rd_data_valid,
@@ -80,7 +79,7 @@ always @(*) begin
 			end
 		end
 		SEND_TX_ALU_SECOND: begin
-			if (!Full && Wr_Ack) begin
+			if (!Full) begin
 				NS = IDLE;
 			end
 			else begin
