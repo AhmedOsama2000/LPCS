@@ -3,6 +3,7 @@ module SYS_TOP
 	parameter INPUT_WIDTH     = 8,
 	parameter OUTPUT_WIDTH    = 8,
 	parameter PRESCALE_WIDTH  = 5,
+	parameter FIFO_WIDTH      = INPUT_WIDTH,
 	parameter REG_WDITH       = 8,
 	parameter ADDR_SIZE       = 4,
 	parameter ALU_IN_WIDTH    = 8,
@@ -23,27 +24,34 @@ module SYS_TOP
 wire Gate_en;
 wire ALU_CLK;
 
-// SYNC_DATA INTERFACE
-wire [INPUT_WIDTH-1:0]  SYNC_RX_DATA;
-wire [OUTPUT_WIDTH-1:0] SYNC_TX_DATA;
-wire SYNC_RX_D_VLD;
-wire SYNC_TX_D_VLD;
+// Sync RX_Data
+wire [INPUT_WIDTH-1:0] SYNC_RX_DATA;
+wire 				   SYNC_RX_D_VLD;
 
+// Sync Reset
 wire sync_rst_1;
 wire sync_rst_2;
 
-wire Sync_Busy;
-
 // UART INTERFACE
 wire [INPUT_WIDTH-1:0]    RX_P_DATA;
-wire [OUTPUT_WIDTH-1:0]   TX_P_DATA;
-wire					  TX_D_VLD;
 wire					  RX_D_VLD;
 wire [PRESCALE_WIDTH-1:0] prescale;
 wire					  PAR_EN;
 wire					  PAR_TYP;
 wire 				 	  TX_CLK;
 wire					  Busy;
+wire                      TX_D_Valid;
+
+// FIFO INTERFACE
+wire [FIFO_WIDTH-1:0] FIFO_IN;
+wire				  Wr_Req_fifo;
+wire				  Rd_Req_fifo;
+wire [FIFO_WIDTH-1:0] FIFO_OUT;
+wire                  Wr_Ack_fifo;
+wire                  Full_fifo;
+wire                  Empty_fifo;
+
+assign Rd_Req_fifo    = !Busy && !TX_D_Valid;
 
 // REG_FILE INTERFACE
 wire [REG_WDITH-1:0] Rd_data;
@@ -79,13 +87,6 @@ CLKGate Clock_Gate (
 	.gate_clk(ALU_CLK)
 );
 
-BIT_SYNC busy_sync_domain1to2 (
-	.CLK(REF_CLK),
-	.rst_n(sync_rst_1),
-	.Async(Busy),
-	.Sync(Sync_Busy)
-);
-
 Data_Sync Domain2to1 (
 	.CLK(REF_CLK),
 	.rst_n(sync_rst_1),
@@ -93,15 +94,6 @@ Data_Sync Domain2to1 (
 	.unsync_bus(RX_P_DATA),
 	.enable_pulse(SYNC_RX_D_VLD),
 	.sync_bus(SYNC_RX_DATA)
-);
-
-Data_Sync Domain1to2 (
-	.CLK(TX_CLK),
-	.rst_n(sync_rst_2),
-	.bus_enable(TX_D_VLD),
-	.unsync_bus(TX_P_DATA),
-	.enable_pulse(SYNC_TX_D_VLD),
-	.sync_bus(SYNC_TX_DATA)
 );
 
 RST_SYNC rst_domain_1 (
@@ -116,6 +108,25 @@ RST_SYNC rst_domain_2 (
 	.sync_rst_n(sync_rst_2)
 );
 
+Async_FIFO #(
+	.FIFO_WIDTH(INPUT_WIDTH)
+)
+	FIFO
+(
+	.wrst_n(sync_rst_1),
+	.rrst_n(sync_rst_2),
+	.wCLK(REF_CLK),
+	.rCLK(TX_CLK),
+	.D_IN(FIFO_IN),
+	.Wr_Req(Wr_Req_fifo),
+	.Rd_Req(Rd_Req_fifo),
+	.D_OUT(FIFO_OUT),
+	.TX_D_Valid(TX_D_Valid),
+	.Wr_Ack(Wr_Ack_fifo),
+	.Full(Full_fifo),
+	.Empty(Empty_fifo)
+);
+
 SYS_CTRL Control_Unit (
 	.CLK(REF_CLK),
 	.rst_n(sync_rst_1),
@@ -123,11 +134,12 @@ SYS_CTRL Control_Unit (
 	.Rd_data_valid(Rd_data_valid),
 	.ALU_OUT(ALU_OUT),
 	.ALU_OUT_valid(ALU_OUT_valid),
-	.BUSY(Sync_Busy),
+	.Wr_Ack(Wr_Ack_fifo),
+	.Full(Full_fifo),
 	.RX_P_DATA(SYNC_RX_DATA),
 	.RX_D_VLD(SYNC_RX_D_VLD),
-	.TX_P_DATA(TX_P_DATA),
-	.TX_D_VLD(TX_D_VLD),
+	.FIFO_IN(FIFO_IN),
+	.Wr_Req(Wr_Req_fifo),
 	.WrEn(WrEn),
 	.WrData(WrData),
 	.Address(Address),
@@ -152,10 +164,10 @@ UART UART (
 	.RX_CLK(UART_CLK),
 	.RX_IN(RX_IN),
 	.RX_P_DATA(RX_P_DATA),
-	.TX_P_DATA(SYNC_TX_DATA),
+	.TX_P_DATA(FIFO_OUT),
 	.PAR_EN(PAR_EN),
 	.PAR_TYP(PAR_TYP),
-	.TX_DATA_VALID(SYNC_TX_D_VLD),
+	.TX_DATA_VALID(TX_D_Valid),
 	.prescale(prescale),
 	.TX_OUT(TX_OUT),
 	.Busy(Busy),
