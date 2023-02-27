@@ -47,7 +47,6 @@ wire [FIFO_WIDTH-1:0] FIFO_IN;
 wire				  Wr_Req_fifo;
 wire				  Rd_Req_fifo;
 wire [FIFO_WIDTH-1:0] FIFO_OUT;
-wire                  Wr_Ack_fifo;
 wire                  Full_fifo;
 wire                  Empty_fifo;
 
@@ -122,7 +121,6 @@ Async_FIFO #(
 	.Rd_Req(Rd_Req_fifo),
 	.D_OUT(FIFO_OUT),
 	.TX_D_Valid(TX_D_Valid),
-	.Wr_Ack(Wr_Ack_fifo),
 	.Full(Full_fifo),
 	.Empty(Empty_fifo)
 );
@@ -134,7 +132,6 @@ SYS_CTRL Control_Unit (
 	.Rd_data_valid(Rd_data_valid),
 	.ALU_OUT(ALU_OUT),
 	.ALU_OUT_valid(ALU_OUT_valid),
-	.Wr_Ack(Wr_Ack_fifo),
 	.Full(Full_fifo),
 	.RX_P_DATA(SYNC_RX_DATA),
 	.RX_D_VLD(SYNC_RX_D_VLD),
