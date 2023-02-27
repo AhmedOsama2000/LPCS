@@ -72,7 +72,7 @@ always @(*) begin
 			end
 		end
 		SEND_TX_ALU_FIRST: begin
-			if (!Full && Wr_Ack) begin
+			if (!Full) begin
 				NS = SEND_TX_ALU_SECOND;
 			end
 			else begin
