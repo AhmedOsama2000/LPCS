@@ -37,15 +37,11 @@ module SYS_TOP_tb;
 	);
 
 	always #10 REF_CLK_tb = ~REF_CLK_tb;
-
-	always #5000 UART_CLK_tb = ~UART_CLK_tb;
-
-	always #40000 TX_CLK = ~TX_CLK;
+	always #6510 UART_CLK_tb = ~UART_CLK_tb; // Prescale X8
+	always #52083 TX_CLK = ~TX_CLK;
 
 	initial begin
-
 		for (i = 0;i < 16;i = i + 1) begin
-			
 			if (i == 2) begin				
 				i = i + 1;
 			end
@@ -53,7 +49,6 @@ module SYS_TOP_tb;
 				i = i + 1;
 			end
 			temp_addr[i] = i;
-	
 		end
 		
 		REF_CLK_tb = 0;
@@ -69,36 +64,25 @@ module SYS_TOP_tb;
 
 		// Check Regsiter File Write Command with randomize the data in all address (Except reserved ones)
 		for (i = 0;i < 16;i = i + 1) begin
-			
 			if (i == 2) begin				
 				i = i + 2;
 			end
 			REG_FILE_WRITE(i);
-
 		end
 
 		// Check Register File Read Command
-		for (i = 0;i < 5;i = i + 1) begin
-			
+		for (i = 0;i < 5;i = i + 1) begin	
 			REG_FILE_READ;
-
 		end
 
 		// Check ALU_WITH_OP Command
 		for (i = 0;i < 5;i = i + 1) begin
-			
 			ALU_WITH_OP;
-
 		end
 
-		// Wait untill second byte is retrieved via TX_OUT Pin
-		repeat (8) @(negedge TX_CLK);
-
 		// Check ALU_WITH_NOP Command
-		for (i = 0;i < 5;i = i + 1) begin
-			
+		for (i = 0;i < 10;i = i + 1) begin	
 			ALU_WITH_NOP;
-
 		end
 
 		repeat (20) @(negedge TX_CLK);
@@ -112,14 +96,12 @@ module SYS_TOP_tb;
 
 		REG_FILE_READ;
 
-		repeat (10) @(negedge TX_CLK);
+		repeat (20) @(negedge TX_CLK);
 		$stop;
-
 	end
 
 	task REG_FILE_WRITE(input integer case_num);
 		begin
-			
 			// FIRST_FRAME (Command)
 			STR_BIT;
 
@@ -171,7 +153,6 @@ module SYS_TOP_tb;
 			end
 			
 			STP_BIT;
-
 		end
 	endtask
 
@@ -212,7 +193,6 @@ module SYS_TOP_tb;
 			end
 
 			STP_BIT;
-
 		end
 	endtask
 
@@ -318,7 +298,7 @@ module SYS_TOP_tb;
 
 			for (counter = 0;counter < 8;counter = counter + 1) begin
 				@(negedge TX_CLK)
-				RX_IN_tb = $random;
+				RX_IN_tb = $urandom_range(12);
 				hold_RX_IN[counter] = RX_IN_tb;
 			end
 
@@ -330,9 +310,6 @@ module SYS_TOP_tb;
 			end
 
 			STP_BIT;
-
-			// Wait untill the Second Byte is retreived via TX_OUT Pin
-			repeat (8) @(negedge TX_CLK);
 
 		end
 	endtask
