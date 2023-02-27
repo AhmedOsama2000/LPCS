@@ -15,7 +15,6 @@ module Async_FIFO #(
 	// OUTPUT
 	output reg                   TX_D_Valid,
 	output reg [FIFO_WIDTH-1:0]  D_OUT,
-	output reg                   Wr_Ack,
 	output wire                  Full,
 	output wire                  Empty
 );
@@ -102,16 +101,11 @@ reg [FIFO_WIDTH-1:0] FIFO_MEM [FIFO_DEPTH-1:0];
 always @(posedge wCLK,negedge wrst_n) begin
 	
 	if (!wrst_n) begin
-		Wr_Ack <= 0;
 		p_wr_b <= 'b0;
 	end
 	else if (Wr_Req && !Full) begin
 		FIFO_MEM[p_wr_b[POINTER_WIDTH-1:0]] <= D_IN;
-		Wr_Ack		     <= 1'b1;
-		p_wr_b 		     <= p_wr_b + 1'b1;
-	end
-	else begin
-		Wr_Ack   	     <= 1'b0;
+		p_wr_b <= p_wr_b + 1'b1;
 	end
 end
 
