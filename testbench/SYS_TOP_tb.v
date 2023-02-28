@@ -16,7 +16,7 @@ module SYS_TOP_tb;
 
 	reg [7:0] temp_addr [15:0];
 
-	reg [7:0] old_config = 8'b0_01000_1_1; // Default: PAR_EN = 1, PAR_TYP = ODD , Prescale = 8
+	reg [7:0] old_config = 8'b0_01000_0_1; // Default: PAR_EN = 1, PAR_TYP = ODD , Prescale = 8
 	reg [7:0] new_config; // To change the config of the UART
 
 	reg [7:0] hold_RX_IN;
@@ -36,9 +36,9 @@ module SYS_TOP_tb;
 		.Frame_Error(Frame_Error_tb)
 	);
 
-	always #10 REF_CLK_tb = ~REF_CLK_tb;
-	always #6510 UART_CLK_tb = ~UART_CLK_tb; // Prescale X8
-	always #52083 TX_CLK = ~TX_CLK;
+	always #10    REF_CLK_tb  = ~REF_CLK_tb;
+	always #6510  UART_CLK_tb = ~UART_CLK_tb; // Prescale X8
+	always #52083 TX_CLK 	  = ~TX_CLK;
 
 	initial begin
 		for (i = 0;i < 16;i = i + 1) begin
@@ -104,7 +104,6 @@ module SYS_TOP_tb;
 		begin
 			// FIRST_FRAME (Command)
 			STR_BIT;
-
 			for (counter = 0;counter < 8;counter = counter + 1) begin
 				@(negedge TX_CLK)
 				RX_IN_tb = CMD_1[counter];
@@ -116,12 +115,10 @@ module SYS_TOP_tb;
 			else if (old_config[0] && !old_config[1]) begin
 				EVEN_CLC_PAR(CMD_1);
 			end
-
 			STP_BIT;
 
 			// SECOND_FRAME (Address)
 			STR_BIT;
-
 			for (counter = 0;counter < 8;counter = counter + 1) begin
 				@(negedge TX_CLK)
 				RX_IN_tb = temp_addr[case_num][counter];
@@ -133,12 +130,10 @@ module SYS_TOP_tb;
 			else if (old_config[0] && !old_config[1]) begin
 				EVEN_CLC_PAR(temp_addr[case_num]);
 			end
-
 			STP_BIT;
 
 			// THIRD_FRAME (Data)
 			STR_BIT;
-
 			for (counter = 0;counter < 8;counter = counter + 1) begin
 				@(negedge TX_CLK)
 				RX_IN_tb = $random;
@@ -151,7 +146,6 @@ module SYS_TOP_tb;
 			else if (old_config[0] && !old_config[1]) begin
 				EVEN_CLC_PAR(hold_RX_IN);
 			end
-			
 			STP_BIT;
 		end
 	endtask
@@ -161,7 +155,6 @@ module SYS_TOP_tb;
 			
 			// FIRST_FRAME (Command)
 			STR_BIT;
-
 			for (counter = 0;counter < 8;counter = counter + 1) begin
 				@(negedge TX_CLK)
 				RX_IN_tb = CMD_2[counter];
@@ -173,12 +166,10 @@ module SYS_TOP_tb;
 			else if (old_config[0] && !old_config[1]) begin
 				EVEN_CLC_PAR(CMD_2);
 			end
-
 			STP_BIT;
 
 			// SECOND_FRAME (Address)
 			STR_BIT;
-
 			for (counter = 0;counter < 8;counter = counter + 1) begin
 				@(negedge TX_CLK)
 				RX_IN_tb = $random;
@@ -191,7 +182,6 @@ module SYS_TOP_tb;
 			else if (old_config[0] && !old_config[1]) begin
 				EVEN_CLC_PAR(hold_RX_IN);
 			end
-
 			STP_BIT;
 		end
 	endtask
@@ -201,7 +191,6 @@ module SYS_TOP_tb;
 			
 			// FIRST_FRAME (Command)
 			STR_BIT;
-
 			for (counter = 0;counter < 8;counter = counter + 1) begin
 				@(negedge TX_CLK)
 				RX_IN_tb = CMD_3[counter];
@@ -213,12 +202,10 @@ module SYS_TOP_tb;
 			else if (old_config[0] && !old_config[1]) begin
 				EVEN_CLC_PAR(CMD_3);
 			end
-
 			STP_BIT;
 
 			// SECOND_FRAME (OPERAND_A)
 			STR_BIT;
-
 			for (counter = 0;counter < 8;counter = counter + 1) begin
 				@(negedge TX_CLK)
 				RX_IN_tb = $random;
@@ -231,12 +218,10 @@ module SYS_TOP_tb;
 			else if (old_config[0] && !old_config[1]) begin
 				EVEN_CLC_PAR(hold_RX_IN);
 			end
-
 			STP_BIT;
 
 			// THIRD_FRAME (OPERAND_B)
 			STR_BIT;
-
 			for (counter = 0;counter < 8;counter = counter + 1) begin
 				@(negedge TX_CLK)
 				RX_IN_tb = $random;
@@ -249,12 +234,10 @@ module SYS_TOP_tb;
 			else if (old_config[0] && !old_config[1]) begin
 				EVEN_CLC_PAR(hold_RX_IN);
 			end
-
 			STP_BIT;
 
 			// FOURTH_FRAME (ALU_FUN)
 			STR_BIT;
-
 			for (counter = 0;counter < 8;counter = counter + 1) begin
 				@(negedge TX_CLK)
 				RX_IN_tb = $random;
@@ -267,7 +250,6 @@ module SYS_TOP_tb;
 			else if (old_config[0] && !old_config[1]) begin
 				EVEN_CLC_PAR(hold_RX_IN);
 			end
-
 			STP_BIT;
 		
 		end
@@ -278,7 +260,6 @@ module SYS_TOP_tb;
 			
 			// FIRST_FRAME (Command)
 			STR_BIT;
-
 			for (counter = 0;counter < 8;counter = counter + 1) begin
 				@(negedge TX_CLK)
 				RX_IN_tb = CMD_4[counter];
@@ -290,12 +271,10 @@ module SYS_TOP_tb;
 			else if (old_config[0] && !old_config[1]) begin
 				EVEN_CLC_PAR(CMD_4);
 			end
-
 			STP_BIT;
 
 			// SECOND_FRAME (ALU_FUN)
 			STR_BIT;
-
 			for (counter = 0;counter < 8;counter = counter + 1) begin
 				@(negedge TX_CLK)
 				RX_IN_tb = $urandom_range(12);
@@ -308,7 +287,6 @@ module SYS_TOP_tb;
 			else if (old_config[0] && !old_config[1]) begin
 				EVEN_CLC_PAR(hold_RX_IN);
 			end
-
 			STP_BIT;
 
 		end
@@ -321,7 +299,6 @@ module SYS_TOP_tb;
 
 			// FIRST_FRAME (Command)
 			STR_BIT;
-
 			for (counter = 0;counter < 8;counter = counter + 1) begin
 				@(negedge TX_CLK)
 				RX_IN_tb = CMD_1[counter];
@@ -333,12 +310,10 @@ module SYS_TOP_tb;
 			else if (old_config[0] && !old_config[1]) begin
 				EVEN_CLC_PAR(CMD_1);
 			end
-
 			STP_BIT;
 
 			// SECOND_FRAME (Address)
 			STR_BIT;
-
 			for (counter = 0;counter < 8;counter = counter + 1) begin
 				@(negedge TX_CLK)
 				RX_IN_tb = temp_addr[2][counter];
@@ -350,12 +325,10 @@ module SYS_TOP_tb;
 			else if (old_config[0] && !old_config[1]) begin
 				EVEN_CLC_PAR(temp_addr[2]);
 			end
-
 			STP_BIT;
 
 			// THIRD_FRAME (Data)
 			STR_BIT;
-
 			for (counter = 0;counter < 8;counter = counter + 1) begin
 				@(negedge TX_CLK)
 				RX_IN_tb = config_set[counter];
@@ -367,7 +340,6 @@ module SYS_TOP_tb;
 			else if (old_config[0] && !old_config[1]) begin
 				EVEN_CLC_PAR(config_set);
 			end
-
 			STP_BIT;
 
 			old_config = new_config;
@@ -376,48 +348,38 @@ module SYS_TOP_tb;
 	endtask
 
 	task STR_BIT;
-		begin
-			
+		begin	
 			@(negedge TX_CLK)
 			RX_IN_tb = 0;
-
 		end
 	endtask
 
 	task STP_BIT;
-		begin
-			
+		begin	
 			@(negedge TX_CLK)
 			RX_IN_tb = 1;
-
 		end
 	endtask
 
 	task RST;
 		begin
-
 			rst_n_tb = 0;
 			@(negedge REF_CLK_tb)
 			rst_n_tb = 1;
-
 		end
 	endtask
 
 	task EVEN_CLC_PAR(input [7:0] DATA);
 		begin
-			
 			@(negedge TX_CLK)
 			RX_IN_tb = ^DATA;
-
 		end
 	endtask
 
 	task ODD_CLC_PAR(input [7:0] DATA);
-		begin
-			
+		begin	
 			@(negedge TX_CLK)
 			RX_IN_tb = !(^DATA);
-
 		end
 	endtask
 
