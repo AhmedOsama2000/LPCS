@@ -50,7 +50,7 @@ wire [FIFO_WIDTH-1:0] FIFO_OUT;
 wire                  Full_fifo;
 wire                  Empty_fifo;
 
-assign Rd_Req_fifo    = !Busy && !TX_D_Valid;
+assign Rd_Req_fifo    = !TX_D_Valid &&!Busy;
 
 // REG_FILE INTERFACE
 wire [REG_WDITH-1:0] Rd_data;

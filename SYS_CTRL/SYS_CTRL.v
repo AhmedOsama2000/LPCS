@@ -8,7 +8,6 @@ module SYS_CTRL
 (
 	input  wire						 CLK,
 	input  wire 					 rst_n,
-	input  wire                      Wr_Ack,
 	input  wire                      Full,
 	input  wire [RD_DATA_WIDTH-1:0]  Rd_data,
 	input  wire 					 Rd_data_valid,
@@ -34,7 +33,6 @@ SYS_CTRL_TX CTRL_TX
 	.rst_n(rst_n),
 	.Rd_data(Rd_data),
 	.Full(Full),
-	.Wr_Ack(Wr_Ack),
 	.Rd_data_valid(Rd_data_valid),
 	.ALU_OUT(ALU_OUT),
 	.ALU_OUT_valid(ALU_OUT_valid),
